@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
 import 'cart.dart';
 import 'admin.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-void main() {
-  runApp(const MyApp());
+Future<void> main() async {
+  await Supabase.initialize(
+    url: 'https://qvjoszippuhcrvvnatdh.supabase.co',
+    anonKey:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF2am9zemlwcHVoY3J2dm5hdGRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI4MDE5OTAsImV4cCI6MjA0ODM3Nzk5MH0.YUmoLBq-x2Y6Mqe-BHj5-LUPy85es0kkDy-16GYRBFw',
+  );
+
+  runApp(MyApp());
 }
 
+final supabase = Supabase.instance.client;
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -32,6 +40,20 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int _selectedIndex = 0;
+  List<Map<String, dynamic>> menus = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchMenus();
+  }
+
+  Future<void> fetchMenus() async {
+    final response = await supabase.from('Menu').select('*');
+    setState(() {
+      menus = List<Map<String, dynamic>>.from(response);
+    });
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -256,581 +278,94 @@ class _MainPageState extends State<MainPage> {
           ),
           // daftar produk start
           Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(top: 20),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        // produk 1 start
-                        Container(
-                          width: 164,
-                          height: 210,
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(40),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.5),
-                                  spreadRadius: 5,
-                                  blurRadius: 7,
-                                  offset: Offset(0, 3),
-                                )
-                              ]),
-                          child: SizedBox(
-                            width: 150,
-                            height: 147,
-                            child: Column(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 10),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(40),
-                                    child: Image.asset(
-                                      'assets/teh.png',
-                                      width: 150,
-                                      height: 147,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(height: 5),
-                                SizedBox(
-                                  width: 140,
-                                  child: Text(
-                                    "Teh Botol",
-                                    style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  children: [
-                                    SizedBox(
-                                      width: 88,
-                                      child: Text(
-                                        "Rp. 4.000,00",
-                                        style: TextStyle(
-                                          fontSize: 11,
-                                        ),
-                                      ),
-                                    ),
-                                    Icon(
-                                      Icons.add_circle,
-                                      color: Colors.green,
-                                      size: 20,
-                                    )
-                                  ],
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                        // produk 1 end
-                        // produk 2 start
-                        Container(
-                          width: 164,
-                          height: 210,
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(40),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.5),
-                                  spreadRadius: 5,
-                                  blurRadius: 7,
-                                  offset: Offset(0, 3),
-                                )
-                              ]),
-                          child: SizedBox(
-                            width: 150,
-                            height: 147,
-                            child: Column(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 10),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(40),
-                                    child: Image.asset(
-                                      'assets/burger.png',
-                                      width: 150,
-                                      height: 147,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(height: 5),
-                                SizedBox(
-                                  width: 140,
-                                  child: Text(
-                                    "Burger King Medium",
-                                    style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  children: [
-                                    SizedBox(
-                                      width: 88,
-                                      child: Text(
-                                        "Rp. 50.000,00",
-                                        style: TextStyle(
-                                          fontSize: 11,
-                                        ),
-                                      ),
-                                    ),
-                                    Icon(
-                                      Icons.add_circle,
-                                      color: Colors.green,
-                                      size: 20,
-                                    )
-                                  ],
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                        // produk 2 end
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(top: 20),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        // produk 1 start
-                        Container(
-                          width: 164,
-                          height: 210,
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(40),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.5),
-                                  spreadRadius: 5,
-                                  blurRadius: 7,
-                                  offset: Offset(0, 3),
-                                )
-                              ]),
-                          child: SizedBox(
-                            width: 150,
-                            height: 147,
-                            child: Column(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 10),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(40),
-                                    child: Image.asset(
-                                      'assets/burger.png',
-                                      width: 150,
-                                      height: 147,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(height: 5),
-                                SizedBox(
-                                  width: 140,
-                                  child: Text(
-                                    "Burger King Medium",
-                                    style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  children: [
-                                    SizedBox(
-                                      width: 88,
-                                      child: Text(
-                                        "Rp. 50.000,00",
-                                        style: TextStyle(
-                                          fontSize: 11,
-                                        ),
-                                      ),
-                                    ),
-                                    Icon(
-                                      Icons.add_circle,
-                                      color: Colors.green,
-                                      size: 20,
-                                    )
-                                  ],
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                        // produk 1 end
-                        // produk 2 start
-                        Container(
-                          width: 164,
-                          height: 210,
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(40),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.5),
-                                  spreadRadius: 5,
-                                  blurRadius: 7,
-                                  offset: Offset(0, 3),
-                                )
-                              ]),
-                          child: SizedBox(
-                            width: 150,
-                            height: 147,
-                            child: Column(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 10),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(40),
-                                    child: Image.asset(
-                                      'assets/teh.png',
-                                      width: 150,
-                                      height: 147,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(height: 5),
-                                SizedBox(
-                                  width: 140,
-                                  child: Text(
-                                    "Teh Botol",
-                                    style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  children: [
-                                    SizedBox(
-                                      width: 88,
-                                      child: Text(
-                                        "Rp. 4.000,00",
-                                        style: TextStyle(
-                                          fontSize: 11,
-                                        ),
-                                      ),
-                                    ),
-                                    Icon(
-                                      Icons.add_circle,
-                                      color: Colors.green,
-                                      size: 20,
-                                    )
-                                  ],
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                        // produk 2 end
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(top: 20),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        // produk 1 start
-                        Container(
-                          width: 164,
-                          height: 210,
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(40),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.5),
-                                  spreadRadius: 5,
-                                  blurRadius: 7,
-                                  offset: Offset(0, 3),
-                                )
-                              ]),
-                          child: SizedBox(
-                            width: 150,
-                            height: 147,
-                            child: Column(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 10),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(40),
-                                    child: Image.asset(
-                                      'assets/teh.png',
-                                      width: 150,
-                                      height: 147,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(height: 5),
-                                SizedBox(
-                                  width: 140,
-                                  child: Text(
-                                    "Teh Botol",
-                                    style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  children: [
-                                    SizedBox(
-                                      width: 88,
-                                      child: Text(
-                                        "Rp. 4.000,00",
-                                        style: TextStyle(
-                                          fontSize: 11,
-                                        ),
-                                      ),
-                                    ),
-                                    Icon(
-                                      Icons.add_circle,
-                                      color: Colors.green,
-                                      size: 20,
-                                    )
-                                  ],
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                        // produk 1 end
-                        // produk 2 start
-                        Container(
-                          width: 164,
-                          height: 210,
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(40),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.5),
-                                  spreadRadius: 5,
-                                  blurRadius: 7,
-                                  offset: Offset(0, 3),
-                                )
-                              ]),
-                          child: SizedBox(
-                            width: 150,
-                            height: 147,
-                            child: Column(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 10),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(40),
-                                    child: Image.asset(
-                                      'assets/burger.png',
-                                      width: 150,
-                                      height: 147,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(height: 5),
-                                SizedBox(
-                                  width: 140,
-                                  child: Text(
-                                    "Burger King Medium",
-                                    style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  children: [
-                                    SizedBox(
-                                      width: 88,
-                                      child: Text(
-                                        "Rp. 50.000,00",
-                                        style: TextStyle(
-                                          fontSize: 11,
-                                        ),
-                                      ),
-                                    ),
-                                    Icon(
-                                      Icons.add_circle,
-                                      color: Colors.green,
-                                      size: 20,
-                                    )
-                                  ],
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                        // produk 2 end
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(top: 20),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        // produk 1 start
-                        Container(
-                          width: 164,
-                          height: 210,
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(40),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.5),
-                                  spreadRadius: 5,
-                                  blurRadius: 7,
-                                  offset: Offset(0, 3),
-                                )
-                              ]),
-                          child: SizedBox(
-                            width: 150,
-                            height: 147,
-                            child: Column(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 10),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(40),
-                                    child: Image.asset(
-                                      'assets/burger.png',
-                                      width: 150,
-                                      height: 147,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(height: 5),
-                                SizedBox(
-                                  width: 140,
-                                  child: Text(
-                                    "Burger King Medium",
-                                    style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  children: [
-                                    SizedBox(
-                                      width: 88,
-                                      child: Text(
-                                        "Rp. 50.000,00",
-                                        style: TextStyle(
-                                          fontSize: 11,
-                                        ),
-                                      ),
-                                    ),
-                                    Icon(
-                                      Icons.add_circle,
-                                      color: Colors.green,
-                                      size: 20,
-                                    )
-                                  ],
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                        // produk 1 end
-                        // produk 2 start
-                        Container(
-                          width: 164,
-                          height: 210,
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(40),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.5),
-                                  spreadRadius: 5,
-                                  blurRadius: 7,
-                                  offset: Offset(0, 3),
-                                )
-                              ]),
-                          child: SizedBox(
-                            width: 150,
-                            height: 147,
-                            child: Column(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 10),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(40),
-                                    child: Image.asset(
-                                      'assets/teh.png',
-                                      width: 150,
-                                      height: 147,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(height: 5),
-                                SizedBox(
-                                  width: 140,
-                                  child: Text(
-                                    "Teh Botol",
-                                    style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  children: [
-                                    SizedBox(
-                                      width: 88,
-                                      child: Text(
-                                        "Rp. 4.000,00",
-                                        style: TextStyle(
-                                          fontSize: 11,
-                                        ),
-                                      ),
-                                    ),
-                                    Icon(
-                                      Icons.add_circle,
-                                      color: Colors.green,
-                                      size: 20,
-                                    )
-                                  ],
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                        // produk 2 end
-                      ],
-                    ),
-                  ),
+  child: GridView.builder(
+    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+      crossAxisCount: 2, 
+      crossAxisSpacing: 10,
+      mainAxisSpacing: 10, 
+      childAspectRatio: 0.8, 
+    ),
+    itemCount: menus.length,
+    itemBuilder: (context, index) {
+      final menu = menus[index];
+      return Container(
+        margin: EdgeInsets.only(top: 20),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 164,
+              height: 210,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(40),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 5,
+                    blurRadius: 7,
+                    offset: Offset(0, 3),
+                  )
                 ],
               ),
+              child: SizedBox(
+                width: 150,
+                height: 147,
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(40),
+                        child: Image.network(
+                          menu['gambar'],
+                          width: 150,
+                          height: 147,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 5),
+                    SizedBox(
+                      width: 140,
+                      child: Text(
+                        menu['nama'],
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        SizedBox(
+                          width: 88,
+                          child: Text(
+                            '${menu['harga'].toStringAsFixed(2)}',
+                            style: TextStyle(
+                              fontSize: 11,
+                            ),
+                          ),
+                        ),
+                        Icon(
+                          Icons.add_circle,
+                          color: Colors.green,
+                          size: 20,
+                        )
+                      ],
+                    )
+                  ],
+                ),
+              ),
             ),
-          ),
+          ],
+        ),
+      );
+    },
+  ),
+)
+
           // daftar produk end
         ],
       ),
@@ -866,3 +401,14 @@ class _MainPageState extends State<MainPage> {
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
+// Author: Ginmothra

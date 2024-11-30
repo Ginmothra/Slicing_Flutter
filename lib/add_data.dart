@@ -1,25 +1,59 @@
 import 'package:flutter/material.dart';
 import 'package:tugas_slicing/admin.dart';
-import 'package:file_picker/file_picker.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 class AddPage extends StatefulWidget {
   const AddPage({super.key});
 
   @override
-  _AddPageState createState() => _AddPageState();
+  State<AddPage> createState() => _AddPageState();
 }
 
 class _AddPageState extends State<AddPage> {
-  String? selectedFileName;
-  String selectedCategory = 'Makanan'; // Default value for the dropdown
+  File? _imageFile;
+  // ambil gambar
+  Future pickImage() async {
+    final ImagePicker picker = ImagePicker();
+    // ambil dari galeri
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
 
-  Future<void> _pickFile() async {
-    final result = await FilePicker.platform.pickFiles();
-    if (result != null && result.files.isNotEmpty) {
+    if (image != null) {
       setState(() {
-        selectedFileName = result.files.single.name;
+        _imageFile = File(image.path);
       });
     }
+  }
+
+  // upload gambar
+  Future uploadImage() async {
+    if (_imageFile == null) return;
+
+    // buat file path unik
+    final fileName = DateTime.now().millisecondsSinceEpoch.toString();
+    final path = 'uploads/$fileName';
+
+    // up ke supabase
+    await Supabase.instance.client.storage
+        .from('gambar')
+        .upload(path, _imageFile!)
+        .then((value) => ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text('berhasil upload'))));
+
+    final urlResponse = Supabase.instance.client.storage.from('gambar').getPublicUrl(path);
+    return urlResponse;
+  }
+  // end
+
+  final TextEditingController _namaController = TextEditingController();
+  final TextEditingController _hargaController = TextEditingController();
+  final supabase = Supabase.instance.client;
+  String? selectedCategory;
+
+  Future<List<dynamic>> fetchdata() async {
+    final response = await supabase.from('Menu').select('*');
+    return response as List<dynamic>;
   }
 
   @override
@@ -29,7 +63,7 @@ class _AddPageState extends State<AddPage> {
         flexibleSpace: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            // button back start
+            // Button back start
             Container(
               margin: EdgeInsets.only(right: 60, top: 10),
               decoration: BoxDecoration(
@@ -61,9 +95,7 @@ class _AddPageState extends State<AddPage> {
                 ],
               ),
             ),
-            // button back end
-
-            // button person start
+            // Button person start
             Container(
               margin: EdgeInsets.only(left: 60, top: 10),
               decoration: BoxDecoration(
@@ -87,198 +119,133 @@ class _AddPageState extends State<AddPage> {
                 ],
               ),
             ),
-            // button person end
+            // Button person end
           ],
         ),
       ),
-      body: Column(
-        children: [
-          // input 1 start
-          Row(
-            children: [
-              Container(
-                width: 100,
-                margin: EdgeInsets.only(left: 50, top: 60),
-                child: Text(
-                  "Nama Produk",
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                margin: EdgeInsets.only(top: 10),
-                width: 325,
-                height: 50,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.5),
-                        blurRadius: 2.75,
-                        offset: Offset(0, -0.1),
-                      )
-                    ]),
-                child: TextField(
-                  keyboardType: TextInputType.text,
-                  decoration: InputDecoration(
-                      hintText: 'Masukkan Nama Produk',
-                      hintStyle: TextStyle(
-                        color: Color.fromRGBO(34, 34, 34, 0.47),
-                        fontSize: 14,
-                      ),
-                      border: InputBorder.none,
-                      contentPadding: EdgeInsets.only(left: 16)),
-                ),
-              ),
-            ],
-          ),
-          // input 1 end
-
-          // input 2 start
-          Row(
-            children: [
-              Container(
-                width: 100,
-                margin: EdgeInsets.only(left: 50, top: 60),
-                child: Text(
-                  "Harga",
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                margin: EdgeInsets.only(top: 10),
-                width: 325,
-                height: 50,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.5),
-                        blurRadius: 2.75,
-                        offset: Offset(0, -0.1),
-                      )
-                    ]),
-                child: TextField(
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                      hintText: 'Masukkan Harga',
-                      hintStyle: TextStyle(
-                        color: Color.fromRGBO(34, 34, 34, 0.47),
-                        fontSize: 14,
-                      ),
-                      border: InputBorder.none,
-                      contentPadding: EdgeInsets.only(left: 16)),
-                ),
-              ),
-            ],
-          ),
-          // input 2 end
-
-          // Dropdown 3 start
-          Row(
-            children: [
-              Container(
-                width: 200,
-                margin: EdgeInsets.only(left: 50, top: 60),
-                child: Text(
-                  "Kategori Produk",
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                margin: EdgeInsets.only(top: 10),
-                width: 325,
-                height: 50,
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.5),
-                      blurRadius: 2.75,
-                      offset: Offset(0, -0.1),
-                    ),
-                  ],
-                ),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    value: selectedCategory,
-                    icon: Icon(Icons.arrow_drop_down, color: Colors.grey),
-                    isExpanded: true,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            // Input Nama Produk
+            Row(
+              children: [
+                Container(
+                  width: 100,
+                  margin: EdgeInsets.only(left: 50, top: 60),
+                  child: Text(
+                    "Nama Produk",
                     style: TextStyle(
-                      color: Color.fromRGBO(34, 34, 34, 0.47),
                       fontSize: 14,
+                      fontWeight: FontWeight.w500,
                     ),
-                    items: <String>['Makanan', 'Minuman']
-                        .map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        selectedCategory = newValue!;
-                      });
-                    },
                   ),
                 ),
-              ),
-            ],
-          ),
-          // Dropdown 3 end
-
-          // Input 4 (File Picker) Start
-          Row(
-            children: [
-              Container(
-                width: 100,
-                margin: EdgeInsets.only(left: 50, top: 60),
-                child: Text(
-                  "Image",
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              GestureDetector(
-                onTap: _pickFile,
-                child: Container(
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
                   margin: EdgeInsets.only(top: 10),
                   width: 325,
                   height: 50,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.5),
+                          blurRadius: 2.75,
+                          offset: Offset(0, -0.1),
+                        )
+                      ]),
+                  child: TextField(
+                    controller: _namaController,
+                    keyboardType: TextInputType.text,
+                    decoration: InputDecoration(
+                        hintText: 'Masukkan Nama Produk',
+                        hintStyle: TextStyle(
+                          color: Color.fromRGBO(34, 34, 34, 0.47),
+                          fontSize: 14,
+                        ),
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.only(left: 16)),
+                  ),
+                ),
+              ],
+            ),
+            // Input Harga
+            Row(
+              children: [
+                Container(
+                  width: 100,
+                  margin: EdgeInsets.only(left: 50, top: 60),
+                  child: Text(
+                    "Harga",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  margin: EdgeInsets.only(top: 10),
+                  width: 325,
+                  height: 50,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.5),
+                          blurRadius: 2.75,
+                          offset: Offset(0, -0.1),
+                        )
+                      ]),
+                  child: TextField(
+                    controller: _hargaController,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                        hintText: 'Masukkan Harga',
+                        hintStyle: TextStyle(
+                          color: Color.fromRGBO(34, 34, 34, 0.47),
+                          fontSize: 14,
+                        ),
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.only(left: 16)),
+                  ),
+                ),
+              ],
+            ),
+            // Dropdown Kategori
+            Row(
+              children: [
+                Container(
+                  width: 200,
+                  margin: EdgeInsets.only(left: 50, top: 60),
+                  child: Text(
+                    "Kategori Produk",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  margin: EdgeInsets.only(top: 10),
+                  width: 325,
+                  height: 50,
+                  padding: EdgeInsets.symmetric(horizontal: 16),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
                     color: Colors.white,
@@ -287,65 +254,149 @@ class _AddPageState extends State<AddPage> {
                         color: Colors.black.withOpacity(0.5),
                         blurRadius: 2.75,
                         offset: Offset(0, -0.1),
-                      )
+                      ),
                     ],
                   ),
-                  child: Padding(
-                    padding: EdgeInsets.only(left: 16, top: 15),
-                    child: Text(
-                      selectedFileName ?? 'Choose File',
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<String>(
+                      value: selectedCategory,
+                      icon: Icon(Icons.arrow_drop_down, color: Colors.grey),
+                      isExpanded: true,
                       style: TextStyle(
-                        color: selectedFileName == null
-                            ? Color.fromRGBO(34, 34, 34, 0.47)
-                            : Colors.black,
+                        color: Colors.black,
                         fontSize: 14,
                       ),
+                      items: <String>['Makanan', 'Minuman']
+                          .map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          selectedCategory = newValue;
+                        });
+                      },
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
-          // Input 4 (File Picker) End
-
-          // submit button start
-          GestureDetector(
-            onTap: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => AdminPage(),
-                ),
-              );
-            },
-            child: Container(
-              margin: EdgeInsets.only(top: 50),
-              width: 326,
-              height: 53,
-              child: Center(
-                child: Text(
-                  "Submit",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
+              ],
+            ),
+            // Input Gambar
+            Row(
+              children: [
+                Container(
+                  width: 100,
+                  margin: EdgeInsets.only(left: 50, top: 60),
+                  child: Text(
+                    "Gambar",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
-              ),
-              decoration: BoxDecoration(
-                  color: Color.fromRGBO(55, 72, 228, 1),
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black,
-                      blurRadius: 3.62,
-                    )
-                  ]),
+              ],
             ),
-          )
-          // submit button end
-        ],
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                GestureDetector(
+                  onTap: pickImage,
+                  child: Container(
+                    margin: EdgeInsets.only(top: 10),
+                    width: 325,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.5),
+                          blurRadius: 2.75,
+                          offset: Offset(0, -0.1),
+                        )
+                      ],
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.only(left: 16, top: 15),
+                      child: _imageFile != null
+                          ? Image.file(_imageFile!)
+                          : const Text(
+                              'Input gmbr',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 14,
+                              ),
+                            ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            // Submit Button
+            GestureDetector(
+              onTap: () async {
+                final imageUrl = await uploadImage();
+                final nama = _namaController.text;
+                final harga = double.tryParse(_hargaController.text) ?? 0.0;
+
+                await supabase.from('Menu').insert({
+                  'nama': nama,
+                  'harga': harga,
+                  'kategori': selectedCategory,
+                  'gambar' : imageUrl,
+                });
+
+                setState(() {});
+                _namaController.clear();
+                _hargaController.clear();
+
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AdminPage(),
+                  ),
+                );
+              },
+              child: Container(
+                margin: EdgeInsets.only(top: 50),
+                width: 326,
+                height: 53,
+                child: Center(
+                  child: Text(
+                    "Submit",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+                decoration: BoxDecoration(
+                    color: Color.fromRGBO(55, 72, 228, 1),
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black,
+                        blurRadius: 3.62,
+                      )
+                    ]),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
+
+
+
+
+
+
+
+
+// Author Ginmothra

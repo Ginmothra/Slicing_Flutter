@@ -86,7 +86,8 @@ class CartPage extends StatelessWidget {
             ],
           ),
         ),
-        body: Column(
+        body: SingleChildScrollView(
+          child: Column(
           children: [
             Center(
               child: Column(
@@ -524,6 +525,8 @@ class CartPage extends StatelessWidget {
               ),
             )
           ],
-        ));
+        )
+        )
+      );
   }
 }
